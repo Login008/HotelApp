@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Hotel</string>
+
+    <string-array name="Roles">
+        <item>Admin</item>
+        <item>Housemaid</item>
+        <item>Caretaker</item>
+    </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

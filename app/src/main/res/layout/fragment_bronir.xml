@@ -1,0 +1,51 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/gray"
+    tools:context=".BronirFragment">
+
+    <!-- Заголовок -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Управление номерами"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:textColor="@color/white"/>
+
+    <!-- Список номеров -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/roomList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        />
+
+    <!-- Кнопки для массовых действий -->
+    <Button
+        android:id="@+id/notifyAllCleaningButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Уведомить горничных"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bt"
+        android:backgroundTint="@color/aquamarine"
+        android:textColor="@color/white"
+        android:textAllCaps="false"/>
+
+    <Button
+        android:id="@+id/notifyAllRepairButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Уведомить завхозов"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bt"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/aquamarine"
+        android:textAllCaps="false"/>
+</LinearLayout>

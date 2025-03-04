@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_guests"
+        android:icon="@drawable/guest"
+        android:title="Guests" />
+    <item
+        android:id="@+id/nav_bronirovanie"
+        android:icon="@drawable/bronir"
+        android:title="Booking" />
+</menu>

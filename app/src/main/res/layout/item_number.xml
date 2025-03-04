@@ -1,0 +1,93 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:background="@color/white"
+    android:layout_marginBottom="8dp"
+    android:backgroundTint="@color/gray">
+
+    <!-- Номер комнаты -->
+    <TextView
+        android:id="@+id/roomNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Номер 101"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"/>
+
+    <!-- Статус бронирования -->
+    <TextView
+        android:id="@+id/bookingStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Статус: Свободен"
+        android:textSize="14sp"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/white"/>
+    <!-- Кнопки для управления бронированием -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- Надпись -->
+        <TextView
+            android:id="@+id/cleaningRepairLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Требуется уборка/ремонт"
+            android:textSize="14sp"
+            android:layout_marginEnd="8dp"
+            android:textColor="@color/white"/>
+
+        <!-- CheckBox -->
+        <CheckBox
+            android:id="@+id/cleaningRepairCheckBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:buttonTint="@color/white"/>
+        <CheckBox
+            android:id="@+id/cleaningRepairCheckBox1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:buttonTint="@color/white"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        android:background="@color/gray"
+        >
+
+        <Button
+            android:id="@+id/bookButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bt"
+            android:text="Забронировать"
+            android:visibility="visible"
+            android:backgroundTint="@color/aquamarine"
+            android:textAllCaps="false"
+            android:textColor="@color/white"/>
+
+        <Button
+            android:id="@+id/unbookButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Снять бронь"
+            android:background="@drawable/bt"
+            android:visibility="gone"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="@color/aquamarine"
+            android:textAllCaps="false"/>
+    </LinearLayout>
+
+</LinearLayout>

@@ -2,6 +2,7 @@ package com.example.hotel
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -17,7 +18,9 @@ import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.Update
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 object DatabaseClient {
     private var instance: HotelDatabase? = null
@@ -75,6 +78,11 @@ data class Number(
 
 @Dao
 interface UserDao {
+    @Query("SELECT email FROM users WHERE role = 'Housemaid'")
+    fun getCleaningStaffEmails(): List<String>
+
+    @Query("SELECT email FROM users WHERE role = 'Caretaker'")  // Завхозы
+    fun getManagersEmails(): List<String>
 
     @Insert
     fun insertUser(user: User)
@@ -107,28 +115,139 @@ interface GuestDao {
 @Dao
 interface NumberDao {
     @Query("SELECT * FROM numbers WHERE needsCleaning = 1")
-    fun getNumbersNeedingCleaning(): LiveData<List<Number>>
+    fun getNumbersNeedingCleaningList(): List<Number>
 
     @Query("SELECT * FROM numbers WHERE needsRepair = 1")
-    fun getNumbersNeedingRepair(): LiveData<List<Number>>
+    fun getNumbersNeedingRepair(): List<Number>
 
     @Update
     fun updateNumber(number: Number)
+
+    @Query("SELECT * FROM numbers")
+    fun getAllNumbers(): LiveData<List<Number>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertNumber(number: Number)
+    @Query("SELECT * FROM numbers")
+    fun getNumbersList(): List<Number> // Для проверки наличия номеров
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertNumbers(numbers: List<Number>) // Вставка списка номеров
+
 }
 
 class HotelViewModel(application: Application) : AndroidViewModel(application) {
+
     private val numberDao: NumberDao = DatabaseClient.getInstance(application).numberDao()
     private val guestDao: GuestDao = DatabaseClient.getInstance(application).guestDao()
 
     private val _numberUpdated = MutableLiveData<Boolean>()
     val numberUpdated: LiveData<Boolean> get() = _numberUpdated
 
+    fun getAllNumbers(): LiveData<List<Number>> {
+        return numberDao.getAllNumbers()
+    }
+
+    fun bookNumber(number: Number) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val updatedNumber = number.copy(isBooked = true)
+            numberDao.updateNumber(updatedNumber)
+        }
+    }
+
+    fun unbookNumber(number: Number) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val updatedNumber = number.copy(isBooked = false)
+            numberDao.updateNumber(updatedNumber)
+        }
+    }
+
+    fun updateNumber(number: Number) {
+        viewModelScope.launch(Dispatchers.IO) {
+            numberDao.updateNumber(number)
+        }
+    }
+
     fun markNumberCleaned(number: Number) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val updatedNumber = number.copy(needsCleaning = false)
             numberDao.updateNumber(updatedNumber)
             _numberUpdated.postValue(true)
         }
     }
+
+    fun autoFillRooms() {
+        viewModelScope.launch {
+            val existingNumbers = withContext(Dispatchers.IO) { numberDao.getNumbersList() } // Запрос в фоновом потоке
+            if (existingNumbers.isEmpty()) {
+                val defaultNumbers = (101..120).map { roomNumber ->
+                    Number(
+                        number = roomNumber.toString(),
+                        isBooked = false,
+                        needsCleaning = false,
+                        needsRepair = false,
+                        guestId = null
+                    )
+                }
+                withContext(Dispatchers.IO) { numberDao.insertNumbers(defaultNumbers) }
+                Log.d("HotelViewModel", "Добавлены номера: ${defaultNumbers.size}")
+            } else {
+                Log.d("HotelViewModel", "Номера уже есть в БД: ${existingNumbers.size}")
+            }
+        }
+    }
+
+    fun notifyCleaningStaff() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val userDao = DatabaseClient.getInstance(getApplication()).userDao()
+            val numberDao = DatabaseClient.getInstance(getApplication()).numberDao()
+
+            // Получаем список адресов уборщиков и номеров, нуждающихся в уборке
+            val cleaningStaffEmails = userDao.getCleaningStaffEmails()
+            val numbersNeedingCleaning = numberDao.getNumbersNeedingCleaningList() // предполагаем, что это List, а не LiveData
+
+            if (cleaningStaffEmails.isNotEmpty()) {
+                if (numbersNeedingCleaning.isNotEmpty()) {
+                    val subject = "Необходима уборка номеров"
+                    val roomList = numbersNeedingCleaning.joinToString { it.number }
+                    val body = "Пожалуйста, проведите уборку в следующих номерах: $roomList"
+
+                    for (email in cleaningStaffEmails) {
+                        MailSender.sendEmail(email, subject, body)
+                    }
+                } else {
+                    Log.e("Нет номеров", "Нет номеров")
+                }
+            } else {
+                Log.e("Нет адресов", "Нет адресов")
+            }
+        }
+    }
+
+    private val userDao: UserDao = DatabaseClient.getInstance(application).userDao()
+
+    fun notifyRepairStaff() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val managersEmails = userDao.getManagersEmails()  // Получаем email завхозов
+            val numbersNeedingRepair = numberDao.getNumbersNeedingRepair()  // Получаем список номеров, требующих ремонта
+
+            if (managersEmails.isNotEmpty()) {
+                if (numbersNeedingRepair.isNotEmpty()) {
+                    val subject = "Необходим ремонт номеров"
+                    val roomList = numbersNeedingRepair.joinToString { it.number }
+                    val body = "Пожалуйста, обратите внимание на следующие номера, которые требуют ремонта: $roomList"
+
+                    for (email in managersEmails) {
+                        MailSender.sendEmail(email, subject, body)
+                    }
+                } else {
+                    Log.e("Нет номеров", "Нет номеров для ремонта")
+                }
+            } else {
+                Log.e("Нет адресов", "Нет адресов завхозов")
+            }
+        }
+    }
 }
+
 

@@ -64,21 +64,18 @@ class Authorisation : AppCompatActivity() {
                         pref.edit().putBoolean("IsAdminLogged", false).apply()
                         pref.edit().putBoolean("IsHousemaidLogged", false).apply()
                         pref.edit().putBoolean("IsCaretakerLogged", true).apply()
-                        pref.edit().putString("Online", user.username).apply()
                         startActivity(Intent(this@Authorisation, MainActivityForCare::class.java))
                     }
                     else if (user.role == "Admin") {
                         pref.edit().putBoolean("IsAdminLogged", true).apply()
                         pref.edit().putBoolean("IsHousemaidLogged", false).apply()
                         pref.edit().putBoolean("IsCaretakerLogged", false).apply()
-                        pref.edit().putString("Online", user.username).apply()
                         startActivity(Intent(this@Authorisation, MainActivityForAdm::class.java))
                     }
                     else if (user.role == "Housemaid") {
                         pref.edit().putBoolean("IsAdminLogged", false).apply()
                         pref.edit().putBoolean("IsHousemaidLogged", true).apply()
                         pref.edit().putBoolean("IsCaretakerLogged", false).apply()
-                        pref.edit().putString("Online", user.username).apply()
                         startActivity(Intent(this@Authorisation, MainActivityForHouse::class.java))
                     }
                 } else {

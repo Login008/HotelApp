@@ -175,6 +175,15 @@ class HotelViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun updateRepairStatusInDatabase(numbers: List<Number>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            numbers.forEach { number ->
+                val updatedNumber = number.copy(needsRepair = false) // Снимаем метку о необходимости ремонта
+                numberDao.updateNumber(updatedNumber)
+            }
+        }
+    }
+
     fun autoFillRooms() {
         viewModelScope.launch {
             val existingNumbers = withContext(Dispatchers.IO) { numberDao.getNumbersList() } // Запрос в фоновом потоке

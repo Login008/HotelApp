@@ -15,12 +15,6 @@
         android:theme="@style/Theme.Hotel"
         tools:targetApi="31">
         <activity
-            android:name=".HouseAdapter"
-            android:exported="false" />
-        <activity
-            android:name=".NumberAdapter"
-            android:exported="false" />
-        <activity
             android:name=".MainActivityForHouse"
             android:exported="false" />
         <activity

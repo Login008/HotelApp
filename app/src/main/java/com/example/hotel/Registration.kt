@@ -63,7 +63,7 @@ class Registration : AppCompatActivity() {
         GlobalScope.launch {
             db.userDao().insertUser(newUser)
             runOnUiThread {
-                Toast.makeText(this@Registration, "Registration successful!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@Registration, "Успешная регистрация!", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -96,26 +96,26 @@ class Registration : AppCompatActivity() {
                                     withContext(Dispatchers.Main) {
                                         Toast.makeText(
                                             this@Registration,
-                                            "An account with such email or such login already exists",
+                                            "Аккаунт с таким логином или email уже существует",
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }
                                 }
                             }
                         } else {
-                            Toast.makeText(this@Registration, "The passwords aren't matching", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@Registration, "Пароли не совпадают", Toast.LENGTH_SHORT).show()
                         }
                     } else {
-                        Toast.makeText(this@Registration, "Invalid Password", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@Registration, "Пароль может содержать только латинские буквы и цифры, должен содержать мин. 1 заглавную буквы, 1 цифру и состоять минимум из 8 символов", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Toast.makeText(this@Registration, "Invalid Login", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@Registration, "Логин должен быть от 3 до 20 символов и содержать только латинские буквы и цифры", Toast.LENGTH_SHORT).show()
                 }
             } else {
-                Toast.makeText(this@Registration, "Invalid Email", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@Registration, "Строгий формат: w@w.w", Toast.LENGTH_SHORT).show()
             }
         } else {
-            Toast.makeText(this@Registration, "Fill in the blanks", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@Registration, "Заполните пустые поля", Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -1,0 +1,48 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_marginBottom="8dp"
+    android:background="@color/gray">
+
+    <!-- Имя гостя -->
+    <TextView
+        android:id="@+id/guestName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Иван Иванов"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"/>
+
+    <!-- Номер телефона -->
+    <TextView
+        android:id="@+id/guestPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="+7 900 123 45 67"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/white"/>
+
+    <!-- Почта -->
+    <TextView
+        android:id="@+id/guestEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ivan@example.com"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/white"/>
+
+    <!-- Место проживания -->
+    <TextView
+        android:id="@+id/guestRoom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Номер 101, Этаж 1"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/white"/>
+</LinearLayout>

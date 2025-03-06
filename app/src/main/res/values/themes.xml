@@ -4,4 +4,5 @@
         <item name="colorPrimary">@color/aquamarine</item>
         <item name="colorOnPrimary">#FFFFFF</item>
     </style>
+
 </resources>

@@ -5,6 +5,19 @@
     android:background="@color/gray"
     android:padding="16dp">
 
+    <!-- Текст для выхода из аккаунта -->
+    <TextView
+        android:id="@+id/logoutText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Выйти"
+        android:textSize="16sp"
+        android:textColor="@color/aquamarine"
+        android:padding="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="onLogoutClicked" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/cleaningList"
         android:layout_width="match_parent"

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:inputType="text"
+        android:textColorHint="@color/white"
+        android:id="@+id/edit_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Введите ФИО"
+        android:textColor="@color/aquamarine" />
+
+    <EditText
+        android:inputType="phone"
+        android:textColorHint="@color/white"
+        android:id="@+id/edit_phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Введите номер телефона"
+        android:textColor="@color/aquamarine"/>
+
+    <EditText
+        android:inputType="textEmailAddress"
+        android:textColorHint="@color/white"
+        android:id="@+id/edit_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Введите email"
+        android:textColor="@color/aquamarine"/>
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/aquamarine"
+        android:id="@+id/spinner_room"/>
+</LinearLayout>
+
+
+

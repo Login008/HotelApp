@@ -11,10 +11,10 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class Authorisation : AppCompatActivity() {
-    private lateinit var loginOrEmail : EditText
-    private lateinit var pass : EditText
+    private lateinit var loginOrEmail: EditText
+    private lateinit var pass: EditText
     private lateinit var db: HotelDatabase
-    private lateinit var pref : SharedPreferences
+    private lateinit var pref: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,17 +25,24 @@ class Authorisation : AppCompatActivity() {
         db = DatabaseClient.getInstance(applicationContext)
         pref = getSharedPreferences("PREF", MODE_PRIVATE)
 
-        if (pref.getBoolean("IsAdminLogged", false))
-        {
+        // Проверяем, авторизован ли пользователь
+        checkIfUserIsLoggedIn()
+    }
+
+    private fun checkIfUserIsLoggedIn() {
+        val isAdminLogged = pref.getBoolean("IsAdminLogged", false)
+        val isCaretakerLogged = pref.getBoolean("IsCaretakerLogged", false)
+        val isHousemaidLogged = pref.getBoolean("IsHousemaidLogged", false)
+
+        if (isAdminLogged) {
             startActivity(Intent(this@Authorisation, MainActivityForAdm::class.java))
-        }
-        else if (pref.getBoolean("IsCaretakerLogged", false))
-        {
+            finish() // Закрываем текущую активность, чтобы пользователь не мог вернуться назад
+        } else if (isCaretakerLogged) {
             startActivity(Intent(this@Authorisation, MainActivityForCare::class.java))
-        }
-        else if (pref.getBoolean("IsHousemaidLogged", false))
-        {
+            finish()
+        } else if (isHousemaidLogged) {
             startActivity(Intent(this@Authorisation, MainActivityForHouse::class.java))
+            finish()
         }
     }
 
@@ -45,12 +52,11 @@ class Authorisation : AppCompatActivity() {
     }
 
     fun Login(view: View) {
-        if (loginOrEmail.text.isNotEmpty() && pass.text.isNotEmpty())
-        {
+        if (loginOrEmail.text.isNotEmpty() && pass.text.isNotEmpty()) {
             loginUser(loginOrEmail.text.toString(), pass.text.toString())
+        } else {
+            Toast.makeText(this@Authorisation, "Заполните пустые поля", Toast.LENGTH_SHORT).show()
         }
-        else
-            Toast.makeText(this@Authorisation, "Fill in the blanks", Toast.LENGTH_SHORT).show()
     }
 
     private fun loginUser(name: String, password: String): Boolean {
@@ -60,26 +66,29 @@ class Authorisation : AppCompatActivity() {
             isAuthenticated = user != null
             runOnUiThread {
                 if (isAuthenticated) {
-                    if (user!!.role == "Caretaker") {
-                        pref.edit().putBoolean("IsAdminLogged", false).apply()
-                        pref.edit().putBoolean("IsHousemaidLogged", false).apply()
-                        pref.edit().putBoolean("IsCaretakerLogged", true).apply()
-                        startActivity(Intent(this@Authorisation, MainActivityForCare::class.java))
+                    when (user!!.role) {
+                        "Caretaker" -> {
+                            pref.edit().putBoolean("IsAdminLogged", false).apply()
+                            pref.edit().putBoolean("IsHousemaidLogged", false).apply()
+                            pref.edit().putBoolean("IsCaretakerLogged", true).apply()
+                            startActivity(Intent(this@Authorisation, MainActivityForCare::class.java))
+                        }
+                        "Admin" -> {
+                            pref.edit().putBoolean("IsAdminLogged", true).apply()
+                            pref.edit().putBoolean("IsHousemaidLogged", false).apply()
+                            pref.edit().putBoolean("IsCaretakerLogged", false).apply()
+                            startActivity(Intent(this@Authorisation, MainActivityForAdm::class.java))
+                        }
+                        "Housemaid" -> {
+                            pref.edit().putBoolean("IsAdminLogged", false).apply()
+                            pref.edit().putBoolean("IsHousemaidLogged", true).apply()
+                            pref.edit().putBoolean("IsCaretakerLogged", false).apply()
+                            startActivity(Intent(this@Authorisation, MainActivityForHouse::class.java))
+                        }
                     }
-                    else if (user.role == "Admin") {
-                        pref.edit().putBoolean("IsAdminLogged", true).apply()
-                        pref.edit().putBoolean("IsHousemaidLogged", false).apply()
-                        pref.edit().putBoolean("IsCaretakerLogged", false).apply()
-                        startActivity(Intent(this@Authorisation, MainActivityForAdm::class.java))
-                    }
-                    else if (user.role == "Housemaid") {
-                        pref.edit().putBoolean("IsAdminLogged", false).apply()
-                        pref.edit().putBoolean("IsHousemaidLogged", true).apply()
-                        pref.edit().putBoolean("IsCaretakerLogged", false).apply()
-                        startActivity(Intent(this@Authorisation, MainActivityForHouse::class.java))
-                    }
+                    finish() // Закрываем текущую активность после успешной авторизации
                 } else {
-                    Toast.makeText(this@Authorisation, "Invalid username or password", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@Authorisation, "Неправильный логин/email или пароль", Toast.LENGTH_SHORT).show()
                 }
             }
         }

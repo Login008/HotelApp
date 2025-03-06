@@ -1,5 +1,6 @@
 package com.example.hotel
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -46,7 +47,7 @@ class BronirFragment : Fragment() {
         adapter = NumberAdapter(
             numbers = emptyList(),
             onBookClick = { number -> bookNumber(number) },
-            onUnbookClick = { number -> unbookNumber(number) },
+            onUnbookClick = { number -> showUnbookConfirmationDialog(number) }, // Изменено: показываем диалог подтверждения
             onCleaningRepairChanged = { number, needsCleaning, needsRepair ->
                 updateCleaningRepairStatus(number, needsCleaning, needsRepair)
             }
@@ -96,8 +97,27 @@ class BronirFragment : Fragment() {
         Toast.makeText(requireContext(), "Номер ${number.number} забронирован", Toast.LENGTH_SHORT).show()
     }
 
+    private fun showUnbookConfirmationDialog(number: Number) {
+        // Диалог подтверждения снятия брони
+        AlertDialog.Builder(requireContext())
+            .setTitle("Снять бронь")
+            .setMessage("Вы уверены, что хотите снять бронь с номера ${number.number}?")
+            .setPositiveButton("Да") { _, _ ->
+                unbookNumber(number) // Снимаем бронь, если пользователь подтвердил
+            }
+            .setNegativeButton("Нет", null)
+            .show()
+    }
+
     private fun unbookNumber(number: Number) {
+        // Снимаем бронь с номера
         hotelViewModel.unbookNumber(number)
+
+        // Если к номеру привязан гость, удаляем его
+        if (number.guestId != null) {
+            hotelViewModel.deleteGuestById(number.guestId)
+        }
+
         Toast.makeText(requireContext(), "Бронь с номера ${number.number} снята", Toast.LENGTH_SHORT).show()
     }
 

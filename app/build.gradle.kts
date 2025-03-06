@@ -47,6 +47,9 @@ android {
 }
 
 dependencies {
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0")
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.3.0")
+    implementation ("androidx.fragment:fragment-ktx:1.3.0")
     implementation ("com.sun.mail:android-mail:1.6.7")
     implementation ("com.sun.mail:android-activation:1.6.7")
     implementation("com.google.android.material:material:1.9.0")

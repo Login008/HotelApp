@@ -50,9 +50,9 @@ class NumberAdapter(
             bookButton.visibility = if (number.isBooked) View.GONE else View.VISIBLE
             unbookButton.visibility = if (number.isBooked) View.VISIBLE else View.GONE
 
-            // Блокировка чекбоксов для забронированных номеров
-            cleaningCheckBox.isEnabled = !number.isBooked
-            repairCheckBox.isEnabled = !number.isBooked
+            // **Чекбоксы всегда активны, независимо от статуса бронирования**
+            cleaningCheckBox.isEnabled = true
+            repairCheckBox.isEnabled = true
 
             // **ОТКЛЮЧАЕМ СЛУШАТЕЛИ ПЕРЕД УСТАНОВКОЙ СОСТОЯНИЯ ЧЕКБОКСОВ**
             cleaningCheckBox.setOnCheckedChangeListener(null)

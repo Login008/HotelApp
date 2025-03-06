@@ -1,0 +1,44 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/gray">
+
+    <SearchView
+        android:id="@+id/searchView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:queryHint="Поиск гостей"
+        android:background="@drawable/bt"
+        android:backgroundTint="@color/aquamarine" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/guestList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/addGuestButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Добавить гостя"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bt"
+        android:backgroundTint="@color/aquamarine"
+        android:textAllCaps="false"
+        android:textColor="@color/white" />
+
+    <Button
+        android:id="@+id/deleteGuestButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Удалить гостя"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bt"
+        android:backgroundTint="@color/aquamarine"
+        android:textAllCaps="false"
+        android:textColor="@color/white" />
+</LinearLayout>

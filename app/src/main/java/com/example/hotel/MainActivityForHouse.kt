@@ -1,6 +1,8 @@
 package com.example.hotel
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -55,5 +57,16 @@ class MainActivityForHouse : AppCompatActivity() {
         hotelViewModel.updateNumbersInDatabase(adapter.cleanedNumbers)
 
         Toast.makeText(this, "Результаты уборки отправлены!", Toast.LENGTH_SHORT).show()
+    }
+
+    fun onLogoutClicked(view: View) {
+        // Очищаем SharedPreferences (или другие данные авторизации)
+        val pref = getSharedPreferences("PREF", MODE_PRIVATE)
+        pref.edit().clear().apply()
+
+        // Переходим на экран авторизации
+        val intent = Intent(this, Authorisation::class.java)
+        startActivity(intent)
+        finish() // Закрываем текущую активность
     }
 }

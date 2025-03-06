@@ -18,6 +18,8 @@ import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.Update
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -49,6 +51,7 @@ abstract class HotelDatabase : RoomDatabase() {
     abstract fun numberDao(): NumberDao
 }
 
+
 @Entity(tableName = "users")
 data class User(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -60,10 +63,11 @@ data class User(
 
 @Entity(tableName = "guests")
 data class Guest(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @PrimaryKey(autoGenerate = true) var id: Long = 0,
     val name: String,
     val phone: String,
-    val email: String
+    val email: String,
+    val roomNumber: String? = null // Добавляем поле для номера отеля
 )
 
 @Entity(tableName = "numbers")
@@ -105,11 +109,18 @@ interface UserDao {
 
 @Dao
 interface GuestDao {
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertGuest(guest: Guest)
+    fun insertGuest(guest: Guest): Long // Возвращаем ID вставленного гостя
+
+    @Delete
+    fun deleteGuest(guest: Guest)
 
     @Query("SELECT * FROM guests")
     fun getAllGuests(): LiveData<List<Guest>>
+
+    @Query("DELETE FROM guests WHERE id = :guestId")
+    fun deleteGuestById(guestId: Long)
 }
 
 @Dao
@@ -134,6 +145,8 @@ interface NumberDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertNumbers(numbers: List<Number>) // Вставка списка номеров
 
+    @Query("SELECT number FROM numbers WHERE guestId = :guestId LIMIT 1")
+    fun getRoomNumberForGuest(guestId: Long): LiveData<String?>
 }
 
 class HotelViewModel(application: Application) : AndroidViewModel(application) {
@@ -141,6 +154,35 @@ class HotelViewModel(application: Application) : AndroidViewModel(application) {
     private val numberDao: NumberDao = DatabaseClient.getInstance(application).numberDao()
     private val guestDao: GuestDao = DatabaseClient.getInstance(application).guestDao()
 
+
+
+    fun addGuest(guest: Guest) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val insertedGuestId = guestDao.insertGuest(guest) // Вставляем гостя и получаем его ID
+            guest.id = insertedGuestId // Устанавливаем сгенерированный ID для объекта гостя
+        }
+    }
+
+    fun updateNumber(number: Number) {
+        viewModelScope.launch(Dispatchers.IO) {
+            numberDao.updateNumber(number)
+        }
+    }
+
+
+    fun deleteGuest(guest: Guest) {
+        viewModelScope.launch(Dispatchers.IO) {
+            guestDao.deleteGuest(guest)
+        }
+    }
+
+    fun getGuestRoomNumber(guestId: Long): LiveData<String?> {
+        return numberDao.getRoomNumberForGuest(guestId) // Получаем номер по гостю
+    }
+
+    fun getAllGuests(): LiveData<List<Guest>> {
+        return guestDao.getAllGuests()
+    }
     fun getAllNumbers(): LiveData<List<Number>> {
         return numberDao.getAllNumbers()
     }
@@ -156,12 +198,6 @@ class HotelViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) {
             val updatedNumber = number.copy(isBooked = false)
             numberDao.updateNumber(updatedNumber)
-        }
-    }
-
-    fun updateNumber(number: Number) {
-        viewModelScope.launch(Dispatchers.IO) {
-            numberDao.updateNumber(number)
         }
     }
 
@@ -181,6 +217,12 @@ class HotelViewModel(application: Application) : AndroidViewModel(application) {
                 val updatedNumber = number.copy(needsRepair = false) // Снимаем метку о необходимости ремонта
                 numberDao.updateNumber(updatedNumber)
             }
+        }
+    }
+
+    fun deleteGuestById(guestId: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            guestDao.deleteGuestById(guestId)
         }
     }
 

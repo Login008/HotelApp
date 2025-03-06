@@ -141,9 +141,6 @@ class HotelViewModel(application: Application) : AndroidViewModel(application) {
     private val numberDao: NumberDao = DatabaseClient.getInstance(application).numberDao()
     private val guestDao: GuestDao = DatabaseClient.getInstance(application).guestDao()
 
-    private val _numberUpdated = MutableLiveData<Boolean>()
-    val numberUpdated: LiveData<Boolean> get() = _numberUpdated
-
     fun getAllNumbers(): LiveData<List<Number>> {
         return numberDao.getAllNumbers()
     }
@@ -168,11 +165,13 @@ class HotelViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun markNumberCleaned(number: Number) {
+    fun updateNumbersInDatabase(numbers: List<Number>) {
+        // Обновляем все помеченные номера как убранные в базе данных
         viewModelScope.launch(Dispatchers.IO) {
-            val updatedNumber = number.copy(needsCleaning = false)
-            numberDao.updateNumber(updatedNumber)
-            _numberUpdated.postValue(true)
+            numbers.forEach { number ->
+                val updatedNumber = number.copy(needsCleaning = false)
+                numberDao.updateNumber(updatedNumber)
+            }
         }
     }
 

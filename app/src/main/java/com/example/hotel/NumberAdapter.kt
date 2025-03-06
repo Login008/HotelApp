@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 
 class NumberAdapter(
@@ -53,27 +54,39 @@ class NumberAdapter(
             cleaningCheckBox.isEnabled = !number.isBooked
             repairCheckBox.isEnabled = !number.isBooked
 
+            // **ОТКЛЮЧАЕМ СЛУШАТЕЛИ ПЕРЕД УСТАНОВКОЙ СОСТОЯНИЯ ЧЕКБОКСОВ**
+            cleaningCheckBox.setOnCheckedChangeListener(null)
+            repairCheckBox.setOnCheckedChangeListener(null)
+
             // Установка чекбоксов
             cleaningCheckBox.isChecked = number.needsCleaning
             repairCheckBox.isChecked = number.needsRepair
 
-            // Блокируем кнопку бронирования, если хотя бы один чекбокс отмечен
-            val isAnyCheckBoxChecked = cleaningCheckBox.isChecked || repairCheckBox.isChecked
-            bookButton.isEnabled = !isAnyCheckBoxChecked
-
-            // Обработчики нажатий
-            bookButton.setOnClickListener { onBookClick(number) }
-            unbookButton.setOnClickListener { onUnbookClick(number) }
-
+            // **ПОВТОРНО НАЗНАЧАЕМ СЛУШАТЕЛИ**
             cleaningCheckBox.setOnCheckedChangeListener { _, isChecked ->
+                number.needsCleaning = isChecked // Обновляем объект
                 onCleaningRepairChanged(number, isChecked, repairCheckBox.isChecked)
             }
 
             repairCheckBox.setOnCheckedChangeListener { _, isChecked ->
+                number.needsRepair = isChecked // Обновляем объект
                 onCleaningRepairChanged(number, cleaningCheckBox.isChecked, isChecked)
             }
+
+            // Обработчик нажатия на кнопку бронирования
+            bookButton.setOnClickListener {
+                // Проверка состояния чекбоксов для текущего номера
+                if (cleaningCheckBox.isChecked || repairCheckBox.isChecked) {
+                    // Показываем уведомление, если хотя бы один чекбокс выбран
+                    Toast.makeText(itemView.context, "Требуется уборка/ремонт, нельзя забронировать", Toast.LENGTH_SHORT).show()
+                } else {
+                    // Если чекбоксы не выбраны, вызываем onBookClick
+                    onBookClick(number)
+                }
+            }
+
+            unbookButton.setOnClickListener { onUnbookClick(number) }
         }
     }
 }
-
 
